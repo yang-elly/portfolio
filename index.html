@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elly Yang — Business Analytics</title>
+  <meta name="description" content="Business Analytics graduate specializing in NLP, data analysis, and business intelligence. Based in Southern California." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ================================================================
+       DESIGN TOKENS
+    ================================================================ */
+    :root {
+      --bg:           #0F1117;
+      --bg-2:         #161B26;
+      --bg-card:      #1C2333;
+      --border:       rgba(255,255,255,0.07);
+      --border-soft:  rgba(255,255,255,0.04);
+
+      --text:         #EDE8DE;
+      --text-muted:   #8891A4;
+      --text-faint:   #4A5568;
+
+      --accent:       #5EAAA8;
+      --accent-dim:   rgba(94,170,168,0.12);
+      --accent-glow:  rgba(94,170,168,0.25);
+      --gold:         #C9A96E;
+      --gold-dim:     rgba(201,169,110,0.12);
+
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body:    'Manrope', system-ui, sans-serif;
+
+      --radius:       16px;
+      --radius-sm:    10px;
+      --radius-pill:  100px;
+
+      --max-w:        1140px;
+      --nav-h:        72px;
+
+      --ease:         cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
+
+      --shadow:       0 8px 32px rgba(0,0,0,0.4);
+      --shadow-sm:    0 2px 12px rgba(0,0,0,0.3);
+    }
+
+    /* ================================================================
+       RESET
+    ================================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-weight: 400;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    img, svg { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+    button { cursor: pointer; font-family: var(--font-body); border: none; background: none; }
+    strong { font-weight: 600; color: var(--text); }
+
+    /* ================================================================
+       UTILITY
+    ================================================================ */
+    .container {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    .section       { padding: 100px 0; }
+    .section--alt  { background: var(--bg-2); }
+
+    .eyebrow {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      max-width: 54ch;
+      line-height: 1.75;
+    }
+
+    /* ================================================================
+       NOISE TEXTURE
+    ================================================================ */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.018;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* ================================================================
+       HEADER / NAV
+    ================================================================ */
+    .header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      z-index: 500;
+      background: rgba(15,17,23,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s var(--ease);
+    }
+    .header.scrolled { border-color: var(--border); }
+
+    .header__inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header__logo {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-style: italic;
+      color: var(--gold);
+      letter-spacing: 0.01em;
+      transition: opacity 0.2s;
+    }
+    .header__logo:hover { opacity: 0.75; }
+
+    .header__nav {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .nav-link {
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-sm);
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+    .nav-link.active { color: var(--accent); }
+
+    .header__icons {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-left: 1rem;
+      padding-left: 1rem;
+      border-left: 1px solid var(--border);
+    }
+
+    .icon-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      color: var(--text-muted);
+      transition: color 0.2s, background 0.2s;
+    }
+    .icon-link:hover { color: var(--accent); background: var(--accent-dim); }
+    .icon-link svg { width: 16px; height: 16px; }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 6px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .hamburger:hover { background: rgba(255,255,255,0.06); }
+    .hamburger span {
+      display: block;
+      width: 20px; height: 1.5px;
+      background: var(--text-muted);
+      border-radius: 2px;
+      transition: all 0.3s var(--ease);
+    }
+
+    /* Mobile menu */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: var(--nav-h);
+      left: 0; right: 0;
+      background: rgba(15,17,23,0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem 2rem;
+      z-index: 499;
+      flex-direction: column;
+      gap: 0.25rem;
+      box-shadow: var(--shadow);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu .nav-link { font-size: 1rem; padding: 0.75rem 1rem; border-radius: var(--radius-sm); }
+    .mobile-menu__icons {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ================================================================
+       HERO
+    ================================================================ */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: var(--nav-h);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero__blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+    .hero__blob--1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(94,170,168,0.1) 0%, transparent 70%);
+      top: -100px; right: -100px;
+    }
+    .hero__blob--2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(201,169,110,0.07) 0%, transparent 70%);
+      bottom: 0; left: -80px;
+    }
+
+    .hero__inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 5rem 2rem;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .hero__eyebrow {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease-out) 0.1s forwards;
+    }
+
+    .hero__name {
+      font-family: var(--font-display);
+      font-size: clamp(3.2rem, 6vw, 5.5rem);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.9s var(--ease-out) 0.2s forwards;
+    }
+
+    .hero__title {
+      font-size: clamp(1rem, 1.8vw, 1.2rem);
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+      opacity: 0;
+      animation: fadeUp 0.9s var(--ease-out) 0.32s forwards;
+    }
+    .hero__title span { color: var(--text); font-weight: 600; }
+
+    .hero__value {
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.8;
+      max-width: 48ch;
+      margin-bottom: 2.5rem;
+      padding-left: 1rem;
+      border-left: 2px solid var(--accent);
+      opacity: 0;
+      animation: fadeUp 0.9s var(--ease-out) 0.44s forwards;
+    }
+
+    .hero__actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.9s var(--ease-out) 0.54s forwards;
+    }
+
+    .hero__socials {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      opacity: 0;
+      animation: fadeUp 0.9s var(--ease-out) 0.64s forwards;
+    }
+    .hero__socials-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .hero__visual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      animation: fadeIn 1.2s var(--ease-out) 0.6s forwards;
+    }
+
+    /* Portrait — swap placeholder for real photo */
+    .hero__portrait {
+      width: 320px; height: 380px;
+      border-radius: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-faint);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      position: relative;
+    }
+    .hero__portrait img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+    .hero__portrait-placeholder { text-align: center; }
+    .hero__portrait-placeholder svg { width: 64px; height: 64px; color: var(--text-faint); margin: 0 auto 0.75rem; opacity: 0.35; }
+
+    /* ================================================================
+       BUTTONS
+    ================================================================ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 0.8rem 1.75rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.22s var(--ease);
+      white-space: nowrap;
+    }
+    .btn--primary {
+      background: var(--accent);
+      color: #0F1117;
+      border: 1.5px solid var(--accent);
+    }
+    .btn--primary:hover {
+      background: #6fc1bf;
+      border-color: #6fc1bf;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--accent-glow);
+    }
+    .btn--outline {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .btn--outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .social-icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px; height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-muted);
+      transition: all 0.2s var(--ease);
+    }
+    .social-icon-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
+      transform: translateY(-2px);
+    }
+    .social-icon-btn svg { width: 17px; height: 17px; }
+
+    /* ================================================================
+       ABOUT
+    ================================================================ */
+    .about__inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .about__text p {
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.85;
+      margin-bottom: 1.25rem;
+    }
+    .about__text p:last-child { margin-bottom: 0; }
+
+    .about__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 2rem;
+    }
+    .trait-tag {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(94,170,168,0.2);
+      padding: 0.4rem 1rem;
+      border-radius: var(--radius-pill);
+      transition: all 0.2s;
+    }
+    .trait-tag:hover { background: rgba(94,170,168,0.2); }
+
+    .about__aside {}
+
+    .about__highlight-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .about__highlight-box .quote-mark {
+      font-family: var(--font-display);
+      font-size: 5rem;
+      line-height: 0.8;
+      color: var(--accent-dim);
+      margin-bottom: 0.5rem;
+    }
+    .about__highlight-box blockquote {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .about__stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .stat-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      transition: border-color 0.2s;
+    }
+    .stat-box:hover { border-color: rgba(94,170,168,0.25); }
+    .stat-box__num {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .stat-box__label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* ================================================================
+       SKILLS
+    ================================================================ */
+    .skills__header { margin-bottom: 3rem; }
+
+    .skills__grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .skill-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .skill-card:hover { border-color: rgba(94,170,168,0.25); transform: translateY(-2px); }
+
+    .skill-card__icon {
+      width: 40px; height: 40px;
+      background: var(--accent-dim);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+    .skill-card__icon svg { width: 20px; height: 20px; }
+
+    .skill-card__title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .pill-group { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .pill {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.8rem;
+      border-radius: var(--radius-pill);
+      transition: all 0.2s;
+    }
+    .pill:hover { color: var(--accent); border-color: rgba(94,170,168,0.3); background: var(--accent-dim); }
+
+    /* Certifications strip */
+    .certs__label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 1rem;
+    }
+    .certs__row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .cert-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .cert-card:hover { border-color: rgba(201,169,110,0.3); transform: translateY(-1px); }
+    .cert-card__icon { color: var(--gold); flex-shrink: 0; margin-top: 1px; }
+    .cert-card__icon svg { width: 17px; height: 17px; }
+    .cert-card__name { font-size: 0.86rem; font-weight: 600; color: var(--text); line-height: 1.35; margin-bottom: 0.2rem; }
+    .cert-card__issuer { font-size: 0.74rem; color: var(--text-muted); }
+
+    /* ================================================================
+       PROJECTS
+    ================================================================ */
+    .projects__header { margin-bottom: 3rem; }
+
+    .projects__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .project-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+    .project-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s var(--ease-out);
+    }
+    .project-card:hover { border-color: rgba(94,170,168,0.2); transform: translateY(-4px); box-shadow: var(--shadow); }
+    .project-card:hover::after { transform: scaleX(1); }
+
+    .project-card__num {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      color: rgba(255,255,255,0.05);
+      line-height: 1;
+      margin-bottom: 1rem;
+      transition: color 0.3s;
+    }
+    .project-card:hover .project-card__num { color: rgba(94,170,168,0.12); }
+
+    .project-card__badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: var(--gold-dim);
+      border: 1px solid rgba(201,169,110,0.2);
+      padding: 0.2rem 0.65rem;
+      border-radius: var(--radius-pill);
+      margin-bottom: 0.85rem;
+    }
+
+    .project-card__title {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 400;
+      line-height: 1.35;
+      color: var(--text);
+      margin-bottom: 0.85rem;
+    }
+
+    .project-card__desc {
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.7;
+      flex: 1;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-card__tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tool-chip {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(94,170,168,0.18);
+      padding: 0.22rem 0.65rem;
+      border-radius: var(--radius-pill);
+    }
+
+    .project-card__link {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color 0.2s;
+      margin-top: auto;
+    }
+    .project-card__link:hover { color: var(--accent); }
+    .project-card__link svg { width: 14px; height: 14px; }
+
+    .projects__cta { text-align: center; }
+
+    /* ================================================================
+       RESUME
+    ================================================================ */
+    .resume__inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .resume__preview {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      aspect-ratio: 8.5 / 11;
+      max-height: 460px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.3s;
+    }
+    .resume__preview:hover { box-shadow: var(--shadow); }
+
+    .resume__faux { width: 65%; text-align: left; }
+    .resume__faux-name { font-family: var(--font-display); font-size: 1.2rem; color: rgba(255,255,255,0.12); margin-bottom: 0.5rem; }
+    .faux-line { height: 1px; background: rgba(255,255,255,0.05); border-radius: 2px; margin-bottom: 8px; }
+    .faux-line:nth-child(2) { width: 100%; margin-bottom: 16px; }
+    .faux-line:nth-child(3) { width: 35%; }
+    .faux-line:nth-child(4) { width: 100%; }
+    .faux-line:nth-child(5) { width: 90%; }
+    .faux-line:nth-child(6) { width: 85%; margin-bottom: 16px; }
+    .faux-line:nth-child(7) { width: 40%; }
+    .faux-line:nth-child(8) { width: 100%; }
+    .faux-line:nth-child(9) { width: 95%; }
+    .faux-line:nth-child(10) { width: 80%; }
+
+    .resume__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, rgba(28,35,51,0.9) 100%);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 1.5rem;
+    }
+
+    .resume__content .section-title { margin-bottom: 1rem; }
+    .resume__content p {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+    .resume__actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    /* ================================================================
+       PERSONAL / BEYOND WORK
+    ================================================================ */
+    .personal__inner {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .personal__text p {
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.85;
+      margin-bottom: 1.25rem;
+    }
+    .personal__text p:last-of-type { margin-bottom: 0; }
+
+    .personal__interest-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 1.5rem;
+    }
+    .interest-tag {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: rgba(201,169,110,0.1);
+      border: 1px solid rgba(201,169,110,0.2);
+      padding: 0.4rem 1rem;
+      border-radius: var(--radius-pill);
+    }
+
+    .personal__deco {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .personal__deco-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+    .personal__deco-card:hover { border-color: rgba(201,169,110,0.25); }
+    .personal__deco-card .icon { font-size: 2rem; margin-bottom: 0.6rem; }
+    .personal__deco-card p { font-size: 0.82rem; font-weight: 500; color: var(--text-muted); line-height: 1.4; }
+
+    /* ================================================================
+       CONTACT
+    ================================================================ */
+    .contact__inner {
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .contact__inner .section-title { margin-bottom: 0.75rem; }
+    .contact__inner .section-subtitle { margin: 0 auto 2.5rem; }
+
+    .contact__buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .contact-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 0.9rem 1.75rem;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      color: var(--text-muted);
+      transition: all 0.22s var(--ease);
+    }
+    .contact-btn svg { width: 18px; height: 18px; }
+    .contact-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); transform: translateY(-2px); }
+    .contact-btn.primary { background: var(--accent); border-color: var(--accent); color: #0F1117; }
+    .contact-btn.primary:hover { background: #6fc1bf; border-color: #6fc1bf; color: #0F1117; box-shadow: 0 6px 20px var(--accent-glow); }
+
+    .contact__note { font-size: 0.82rem; color: var(--text-faint); letter-spacing: 0.04em; }
+
+    /* ================================================================
+       FOOTER
+    ================================================================ */
+    .footer { border-top: 1px solid var(--border); padding: 2.5rem 0; background: var(--bg); }
+    .footer__inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer__left { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
+    .footer__copy { font-size: 0.8rem; color: var(--text-faint); }
+    .footer__links { display: flex; gap: 1.5rem; }
+    .footer__link { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); transition: color 0.2s; }
+    .footer__link:hover { color: var(--accent); }
+    .footer__icons { display: flex; gap: 0.5rem; }
+
+    /* ================================================================
+       SCROLL REVEAL
+    ================================================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+    .reveal-d4 { transition-delay: 0.4s; }
+
+    /* ================================================================
+       DIVIDER
+    ================================================================ */
+    .section-divider { height: 1px; background: var(--border); border: none; margin: 0; }
+
+    /* ================================================================
+       KEYFRAMES
+    ================================================================ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: none; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* ================================================================
+       RESPONSIVE
+    ================================================================ */
+    @media (max-width: 900px) {
+      .header__nav, .header__icons { display: none; }
+      .hamburger { display: flex; }
+
+      .hero__inner { grid-template-columns: 1fr; text-align: center; gap: 2.5rem; padding: 3rem 1.5rem 4rem; }
+      .hero__value { margin-left: auto; margin-right: auto; border-left: none; border-top: 2px solid var(--accent); padding: 1rem 0 0; }
+      .hero__actions { justify-content: center; }
+      .hero__socials { justify-content: center; }
+      .hero__visual { order: -1; }
+
+      .about__inner, .resume__inner, .personal__inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .skills__grid { grid-template-columns: 1fr; }
+      .projects__grid { grid-template-columns: 1fr; }
+      .certs__row { grid-template-columns: 1fr; }
+      .personal__deco { flex-direction: row; flex-wrap: wrap; }
+      .personal__deco-card { flex: 1; min-width: 140px; }
+      .footer__inner { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    }
+
+    @media (max-width: 600px) {
+      .section { padding: 64px 0; }
+      .container { padding: 0 1.25rem; }
+      .hero__inner { padding: 2.5rem 1.25rem 3.5rem; }
+      .about__stats { grid-template-columns: 1fr 1fr; }
+      .resume__preview { max-height: 340px; }
+      .contact__buttons { flex-direction: column; align-items: stretch; }
+      .contact-btn { justify-content: center; }
+      .footer__left { flex-direction: column; gap: 0.75rem; }
+      .personal__deco { flex-direction: column; }
+      .resume__actions { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER
+  ============================================================ -->
+  <header class="header" id="header">
+    <div class="header__inner">
+
+      <a href="#home" class="header__logo">Elly Yang</a>
+
+      <nav class="header__nav" aria-label="Main navigation">
+        <a href="#home"      class="nav-link">Home</a>
+        <a href="#about"     class="nav-link">About</a>
+        <a href="#skills"    class="nav-link">Skills</a>
+        <a href="#projects"  class="nav-link">Projects</a>
+        <a href="#resume"    class="nav-link">Resume</a>
+        <a href="#contact"   class="nav-link">Contact</a>
+        <a href="projects.html" class="nav-link">All Projects</a>
+      </nav>
+
+      <div class="header__icons">
+        <a href="https://www.linkedin.com/in/ellyyang0528/" target="_blank" class="icon-link" aria-label="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+        <a href="https://github.com/ellyyang0528" target="_blank" class="icon-link" aria-label="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        </a>
+        <a href="mailto:yang_elly@outlook.com" class="icon-link" aria-label="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+      </div>
+
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+
+    </div>
+  </header>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#home"         class="nav-link" onclick="closeMenu()">Home</a>
+    <a href="#about"        class="nav-link" onclick="closeMenu()">About</a>
+    <a href="#skills"       class="nav-link" onclick="closeMenu()">Skills</a>
+    <a href="#projects"     class="nav-link" onclick="closeMenu()">Projects</a>
+    <a href="#resume"       class="nav-link" onclick="closeMenu()">Resume</a>
+    <a href="#contact"      class="nav-link" onclick="closeMenu()">Contact</a>
+    <a href="projects.html" class="nav-link" onclick="closeMenu()">All Projects</a>
+    <div class="mobile-menu__icons">
+      <a href="https://www.linkedin.com/in/ellyyang0528/" target="_blank" class="social-icon-btn" aria-label="LinkedIn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      </a>
+      <a href="https://github.com/ellyyang0528" target="_blank" class="social-icon-btn" aria-label="GitHub">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      </a>
+      <a href="mailto:yang_elly@outlook.com" class="social-icon-btn" aria-label="Email">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </a>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       HERO
+  ============================================================ -->
+  <section class="hero" id="home">
+    <div class="hero__blob hero__blob--1"></div>
+    <div class="hero__blob hero__blob--2"></div>
+
+    <div class="hero__inner">
+      <div class="hero__text">
+
+        <p class="hero__eyebrow">Business · Data · Finance</p>
+
+        <h1 class="hero__name">Elly Yang</h1>
+
+        <p class="hero__title">
+          <span>M.S. in Business Analytics</span> &nbsp;·&nbsp; Data Analytics
+          &nbsp;·&nbsp; NLP &amp; Text Mining &nbsp;·&nbsp; Business Insights
+        </p>
+
+        <p class="hero__value">
+          Data-driven problem solver with a background in business analytics and a
+          strong interest in finance. I translate complex data into clear, actionable
+          insights that drive real business value.
+        </p>
+
+        <div class="hero__actions">
+          <a href="#projects" class="btn btn--primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            View Projects
+          </a>
+          <!-- ✏️ Place your resume at pdf/Elly_Yang_Resume.pdf -->
+          <a href="pdf/Elly_Yang_Resume.pdf" class="btn btn--outline" download>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Resume
+          </a>
+          <a href="mailto:yang_elly@outlook.com" class="btn btn--outline">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Contact Me
+          </a>
+        </div>
+
+        <div class="hero__socials">
+          <span class="hero__socials-label">Connect</span>
+          <a href="https://www.linkedin.com/in/ellyyang0528/" target="_blank" class="social-icon-btn" aria-label="LinkedIn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="https://github.com/ellyyang0528" target="_blank" class="social-icon-btn" aria-label="GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          </a>
+          <a href="mailto:yang_elly@outlook.com" class="social-icon-btn" aria-label="Email">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </a>
+        </div>
+
+      </div>
+
+      <!-- ✏️ Replace images/profile.jpg with your actual photo file.
+           It will auto-display; placeholder shows until then. -->
+      <div class="hero__visual">
+        <div class="hero__portrait">
+          <img src="images/profile.jpg" alt="Elly Yang"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <div class="hero__portrait-placeholder" style="display:none;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <p>Add images/profile.jpg</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+
+  <!-- ============================================================
+       ABOUT
+  ============================================================ -->
+  <section class="section" id="about">
+    <div class="container">
+      <div class="about__inner">
+
+        <div class="about__text">
+          <p class="eyebrow reveal">About Me</p>
+          <h2 class="section-title reveal">Analytical by training.<br>Business-minded by nature.</h2>
+
+          <p class="reveal">
+            I am a Business Analytics graduate (M.S., Cal Poly Pomona, GPA 3.9) with
+            experience in data analysis, text mining, machine learning, and
+            business-focused problem-solving. My work centers on turning large and complex
+            data into practical insights that support decision-making — bridging technical
+            methods with clear, actionable results.
+          </p>
+
+          <p class="reveal">
+            I am originally from Taiwan and began studying abroad in 2019, which
+            strengthened my independence, adaptability, and resilience. I enjoy
+            international travel planning for myself and my family, and that reflects
+            how I approach work too: organized, resourceful, detail-oriented, and calm
+            when solving problems across language and logistical barriers.
+          </p>
+
+          <div class="about__tags reveal">
+            <span class="trait-tag">Independent</span>
+            <span class="trait-tag">Adaptable</span>
+            <span class="trait-tag">Detail-Oriented</span>
+            <span class="trait-tag">Globally Minded</span>
+            <span class="trait-tag">Business-Focused</span>
+          </div>
+        </div>
+
+        <div class="about__aside">
+          <div class="about__highlight-box reveal">
+            <div class="quote-mark">"</div>
+            <blockquote>
+              Data only earns its value when it drives a decision someone can act on.
+            </blockquote>
+          </div>
+
+          <div class="about__stats reveal reveal-d2">
+            <div class="stat-box">
+              <div class="stat-box__num">3.9</div>
+              <div class="stat-box__label">M.S. GPA — Cal Poly Pomona</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box__num">5GB</div>
+              <div class="stat-box__label">Reddit dataset analyzed for thesis</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box__num">2025</div>
+              <div class="stat-box__label">Presented at RSCA Conference</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box__num">4+</div>
+              <div class="stat-box__label">Analytical projects completed</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+
+  <!-- ============================================================
+       SKILLS
+  ============================================================ -->
+  <section class="section section--alt" id="skills">
+    <div class="container">
+
+      <div class="skills__header">
+        <p class="eyebrow reveal">Capabilities</p>
+        <h2 class="section-title reveal">Skills &amp; Tools</h2>
+        <p class="section-subtitle reveal">
+          A working toolkit across analytics, programming, machine learning, and professional practice.
+        </p>
+      </div>
+
+      <div class="skills__grid">
+
+        <div class="skill-card reveal reveal-d1">
+          <div class="skill-card__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div class="skill-card__title">Analytics &amp; BI</div>
+          <div class="pill-group">
+            <span class="pill">Statistical Analysis</span>
+            <span class="pill">Data Modeling</span>
+            <span class="pill">Data Visualization</span>
+            <span class="pill">Business Intelligence</span>
+            <span class="pill">Exploratory Data Analysis</span>
+            <span class="pill">Power BI</span>
+            <span class="pill">Tableau</span>
+          </div>
+        </div>
+
+        <div class="skill-card reveal reveal-d2">
+          <div class="skill-card__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <div class="skill-card__title">Programming &amp; Tools</div>
+          <div class="pill-group">
+            <span class="pill">Python</span>
+            <span class="pill">R</span>
+            <span class="pill">SQL</span>
+            <span class="pill">Excel (Solver, Data Analysis)</span>
+            <span class="pill">PySpark</span>
+            <span class="pill">Spark SQL</span>
+            <span class="pill">AWS</span>
+          </div>
+        </div>
+
+        <div class="skill-card reveal reveal-d3">
+          <div class="skill-card__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="skill-card__title">Machine Learning &amp; NLP</div>
+          <div class="pill-group">
+            <span class="pill">NLP</span>
+            <span class="pill">Text Mining</span>
+            <span class="pill">Sentiment Analysis</span>
+            <span class="pill">Topic Modeling</span>
+            <span class="pill">BERT</span>
+            <span class="pill">Machine Learning</span>
+            <span class="pill">Predictive Modeling</span>
+          </div>
+        </div>
+
+        <div class="skill-card reveal reveal-d4">
+          <div class="skill-card__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="skill-card__title">Professional Strengths</div>
+          <div class="pill-group">
+            <span class="pill">Problem Solving</span>
+            <span class="pill">Research</span>
+            <span class="pill">Cross-Cultural Communication</span>
+            <span class="pill">Project Coordination</span>
+            <span class="pill">Adaptability</span>
+            <span class="pill">Detail Orientation</span>
+            <span class="pill">Bilingual (EN / ZH)</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Certifications -->
+      <div class="reveal">
+        <p class="certs__label">Certifications</p>
+        <div class="certs__row">
+          <div class="cert-card">
+            <div class="cert-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+            </div>
+            <div>
+              <div class="cert-card__name">Commercial Real Estate Analytics</div>
+              <div class="cert-card__issuer">CoStar · 2024</div>
+            </div>
+          </div>
+          <div class="cert-card">
+            <div class="cert-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+            </div>
+            <div>
+              <div class="cert-card__name">Data Wrangling &amp; Visualization</div>
+              <div class="cert-card__issuer">Cal Poly Pomona · 2023</div>
+            </div>
+          </div>
+          <div class="cert-card">
+            <div class="cert-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+            </div>
+            <div>
+              <div class="cert-card__name">Notary Public, California</div>
+              <div class="cert-card__issuer">COMM. #2422438 · 2022</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+
+  <!-- ============================================================
+       FEATURED PROJECTS
+  ============================================================ -->
+  <section class="section" id="projects">
+    <div class="container">
+
+      <div class="projects__header">
+        <p class="eyebrow reveal">Work</p>
+        <h2 class="section-title reveal">Featured Projects</h2>
+        <p class="section-subtitle reveal">
+          Selected work reflecting my technical, analytical, and business problem-solving skills.
+        </p>
+      </div>
+
+      <div class="projects__grid">
+
+        <!-- PROJECT 1: Thesis -->
+        <article class="project-card reveal reveal-d1">
+          <div class="project-card__num">01</div>
+          <span class="project-card__badge">M.S. Thesis · RSCA 2025</span>
+          <h3 class="project-card__title">Predicting Conflicts &amp; Analyzing Boycotts Through Reddit Posts</h3>
+          <p class="project-card__desc">
+            Analyzed a 5GB Reddit dataset (Sep 2023 – Jan 2025) using BERT-based sentiment
+            analysis and topic modeling. Found 77% of comments were negative, with negative
+            posts averaging 60% longer — indicating deeper emotional engagement. Conflict
+            events triggered multi-day negativity surges. Presented at the 13th RSCA Conference.
+          </p>
+          <div class="project-card__tools">
+            <span class="tool-chip">Python</span>
+            <span class="tool-chip">BERT</span>
+            <span class="tool-chip">NLP</span>
+            <span class="tool-chip">Sentiment Analysis</span>
+            <span class="tool-chip">Topic Modeling</span>
+          </div>
+          <a href="projects.html#thesis" class="project-card__link">
+            View Full Project
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </article>
+
+        <!-- PROJECT 2: Big Data -->
+        <article class="project-card reveal reveal-d2">
+          <div class="project-card__num">02</div>
+          <span class="project-card__badge">Big Data</span>
+          <h3 class="project-card__title">Online Grocery Recommendation System</h3>
+          <p class="project-card__desc">
+            Built a scalable personalized recommendation engine using large-scale e-commerce
+            transaction data. Implemented collaborative filtering via Spark MLlib's ALS
+            algorithm with a full PySpark pipeline — demonstrating production-ready
+            distributed computing architecture.
+          </p>
+          <div class="project-card__tools">
+            <span class="tool-chip">PySpark</span>
+            <span class="tool-chip">Spark SQL</span>
+            <span class="tool-chip">Spark MLlib</span>
+            <span class="tool-chip">AWS</span>
+          </div>
+          <a href="projects.html#bigdata" class="project-card__link">
+            View Full Project
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </article>
+
+        <!-- PROJECT 3: Pricing Model -->
+        <article class="project-card reveal reveal-d3">
+          <div class="project-card__num">03</div>
+          <span class="project-card__badge">Business Analytics</span>
+          <h3 class="project-card__title">Competitive Pricing Optimization Model</h3>
+          <p class="project-card__desc">
+            Built and applied an Excel-based pricing model at Maxx Group LLC — mapping
+            competitor prices across Amazon, Walmart, Home Depot, and Lowe's against
+            internal costs to identify margin floors and product viability. Findings
+            fed directly into executive product strategy decisions.
+          </p>
+          <div class="project-card__tools">
+            <span class="tool-chip">Excel Solver</span>
+            <span class="tool-chip">Pricing Analysis</span>
+            <span class="tool-chip">Competitive Intelligence</span>
+          </div>
+          <a href="projects.html#pricing" class="project-card__link">
+            View Full Project
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </article>
+
+      </div>
+
+      <div class="projects__cta reveal">
+        <a href="projects.html" class="btn btn--primary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          View All Projects
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+
+  <!-- ============================================================
+       RESUME
+  ============================================================ -->
+  <section class="section section--alt" id="resume">
+    <div class="container">
+      <div class="resume__inner">
+
+        <div class="resume__preview reveal">
+          <div class="resume__faux">
+            <div class="resume__faux-name">Elly Yang</div>
+            <div class="faux-line"></div>
+            <div class="faux-line"></div>
+            <div class="faux-line"></div>
+            <div class="faux-line"></div>
+            <div class="faux-line"></div>
+            <div class="faux-line"></div>
+            <div class="faux-line"></div>
+            <div class="faux-line"></div>
+            <div class="faux-line"></div>
+            <div class="faux-line"></div>
+          </div>
+          <div class="resume__overlay">
+            <a href="pdf/Elly_Yang_Resume.pdf" target="_blank" class="btn btn--primary" style="font-size:0.78rem;padding:0.55rem 1.1rem;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Preview
+            </a>
+          </div>
+        </div>
+
+        <div class="resume__content reveal reveal-d2">
+          <p class="eyebrow">Resume</p>
+          <h2 class="section-title">Full background,<br>one document.</h2>
+          <p>
+            My resume provides a complete overview of my academic background, technical
+            skills, and project work — structured for quick review and updated as of 2025.
+          </p>
+          <div class="resume__actions">
+            <a href="pdf/Elly_Yang_Resume.pdf" target="_blank" class="btn btn--primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              View Resume
+            </a>
+            <a href="pdf/Elly_Yang_Resume.pdf" class="btn btn--outline" download>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download PDF
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+
+  <!-- ============================================================
+       BEYOND WORK
+  ============================================================ -->
+  <section class="section" id="personal">
+    <div class="container">
+      <div class="personal__inner">
+
+        <div class="personal__text">
+          <p class="eyebrow reveal">Beyond Work</p>
+          <h2 class="section-title reveal">The person behind the work.</h2>
+
+          <p class="reveal">
+            I am originally from Taiwan and made the decision to study abroad in 2019 —
+            navigating a new country, academic system, and professional culture largely
+            on my own. That experience shaped how I approach everything: independently,
+            thoroughly, and calmly when things get complicated.
+          </p>
+
+          <p class="reveal">
+            Outside of analytics, I enjoy planning international travel for myself and
+            my family — coordinating across languages, time zones, and logistical
+            constraints. It mirrors the same thinking I apply professionally: break the
+            problem down, find the most efficient path, and execute in a way that holds
+            up in the real world.
+          </p>
+
+          <div class="personal__interest-tags reveal">
+            <span class="interest-tag">International Perspective</span>
+            <span class="interest-tag">Travel Planning</span>
+            <span class="interest-tag">Cross-Cultural Adaptability</span>
+          </div>
+        </div>
+
+        <div class="personal__deco reveal reveal-d2">
+          <div class="personal__deco-card">
+            <div class="icon">🌏</div>
+            <p>Studied abroad since 2019 — independent, adaptable, globally aware</p>
+          </div>
+          <div class="personal__deco-card">
+            <div class="icon">✈️</div>
+            <p>Plans international travel across language and logistical barriers</p>
+          </div>
+          <div class="personal__deco-card">
+            <div class="icon">🗂️</div>
+            <p>Brings the same organization and detail orientation to every project</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+
+  <!-- ============================================================
+       CONTACT
+  ============================================================ -->
+  <section class="section section--alt" id="contact">
+    <div class="container">
+      <div class="contact__inner">
+
+        <p class="eyebrow reveal">Contact</p>
+        <h2 class="section-title reveal">Let's connect.</h2>
+        <p class="section-subtitle reveal">
+          Open to business analyst and data analyst roles in Southern California.
+          Hybrid preferred — remote welcome.
+        </p>
+
+        <div class="contact__buttons reveal">
+          <a href="mailto:yang_elly@outlook.com" class="contact-btn primary">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            yang_elly@outlook.com
+          </a>
+          <a href="https://www.linkedin.com/in/ellyyang0528/" target="_blank" class="contact-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            LinkedIn
+          </a>
+          <a href="https://github.com/ellyyang0528" target="_blank" class="contact-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            GitHub
+          </a>
+        </div>
+
+        <p class="contact__note reveal">Best way to reach me: email &nbsp;·&nbsp; Based in Chino, CA</p>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__left">
+        <span class="footer__copy">© 2026 Elly Yang</span>
+        <nav class="footer__links" aria-label="Footer navigation">
+          <a href="#about"        class="footer__link">About</a>
+          <a href="#skills"       class="footer__link">Skills</a>
+          <a href="#projects"     class="footer__link">Projects</a>
+          <a href="projects.html" class="footer__link">All Projects</a>
+          <a href="pdf/Elly_Yang_Resume.pdf" class="footer__link" download>Resume</a>
+        </nav>
+      </div>
+      <div class="footer__icons">
+        <a href="https://www.linkedin.com/in/ellyyang0528/" target="_blank" class="icon-link" aria-label="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+        <a href="https://github.com/ellyyang0528" target="_blank" class="icon-link" aria-label="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        </a>
+        <a href="mailto:yang_elly@outlook.com" class="icon-link" aria-label="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ============================================================
+       JAVASCRIPT
+  ============================================================ -->
+  <script>
+    // Nav scroll border
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+
+    // Hamburger menu
+    const hamburger  = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    let menuOpen = false;
+
+    hamburger.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenu.classList.toggle('open', menuOpen);
+      hamburger.setAttribute('aria-expanded', menuOpen);
+      const spans = hamburger.querySelectorAll('span');
+      if (menuOpen) {
+        spans[0].style.transform = 'rotate(45deg) translate(4.5px, 4.5px)';
+        spans[1].style.opacity   = '0';
+        spans[2].style.transform = 'rotate(-45deg) translate(4.5px, -4.5px)';
+      } else {
+        spans[0].style.transform = '';
+        spans[1].style.opacity   = '';
+        spans[2].style.transform = '';
+      }
+    });
+
+    function closeMenu() {
+      menuOpen = false;
+      mobileMenu.classList.remove('open');
+      const spans = hamburger.querySelectorAll('span');
+      spans[0].style.transform = '';
+      spans[1].style.opacity   = '';
+      spans[2].style.transform = '';
+    }
+
+    // Click outside to close
+    document.addEventListener('click', (e) => {
+      if (menuOpen && !mobileMenu.contains(e.target) && !hamburger.contains(e.target)) closeMenu();
+    });
+
+    // Scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+      revealEls.forEach(el => obs.observe(el));
+    } else {
+      revealEls.forEach(el => el.classList.add('visible'));
+    }
+
+    // Active nav highlight on scroll
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.header__nav .nav-link');
+    if (sections.length && navLinks.length) {
+      const sObs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + entry.target.id));
+          }
+        });
+      }, { threshold: 0.4 });
+      sections.forEach(s => sObs.observe(s));
+    }
+  </script>
+
+</body>
+</html>

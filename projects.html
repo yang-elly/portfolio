@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects — Elly Yang</title>
+  <meta name="description" content="Full project portfolio — NLP, big data, pricing analysis by Elly Yang." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ================================================================
+       DESIGN TOKENS — identical to index.html
+    ================================================================ */
+    :root {
+      --bg:           #0F1117;
+      --bg-2:         #161B26;
+      --bg-card:      #1C2333;
+      --border:       rgba(255,255,255,0.07);
+      --border-soft:  rgba(255,255,255,0.04);
+
+      --text:         #EDE8DE;
+      --text-muted:   #8891A4;
+      --text-faint:   #4A5568;
+
+      --accent:       #5EAAA8;
+      --accent-dim:   rgba(94,170,168,0.12);
+      --accent-glow:  rgba(94,170,168,0.25);
+      --gold:         #C9A96E;
+      --gold-dim:     rgba(201,169,110,0.12);
+
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body:    'Manrope', system-ui, sans-serif;
+
+      --radius:       16px;
+      --radius-sm:    10px;
+      --radius-pill:  100px;
+
+      --max-w:        1140px;
+      --nav-h:        72px;
+
+      --ease:         cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
+
+      --shadow:       0 8px 32px rgba(0,0,0,0.4);
+      --shadow-sm:    0 2px 12px rgba(0,0,0,0.3);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-weight: 400;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    img, svg { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+    button { cursor: pointer; font-family: var(--font-body); border: none; background: none; }
+    strong { font-weight: 600; color: var(--text); }
+
+    /* Noise texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.018;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .container { max-width: var(--max-w); margin: 0 auto; padding: 0 2rem; }
+    .section { padding: 100px 0; }
+    .section--alt { background: var(--bg-2); }
+    .section-divider { height: 1px; background: var(--border); border: none; margin: 0; }
+
+    .eyebrow {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    /* ================================================================
+       HEADER — identical to index.html
+    ================================================================ */
+    .header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      z-index: 500;
+      background: rgba(15,17,23,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s var(--ease);
+    }
+    .header.scrolled { border-color: var(--border); }
+    .header__inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header__logo {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-style: italic;
+      color: var(--gold);
+      transition: opacity 0.2s;
+    }
+    .header__logo:hover { opacity: 0.75; }
+    .header__nav { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-link {
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-sm);
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+    .nav-link.active { color: var(--accent); }
+    .header__icons {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-left: 1rem;
+      padding-left: 1rem;
+      border-left: 1px solid var(--border);
+    }
+    .icon-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      color: var(--text-muted);
+      transition: color 0.2s, background 0.2s;
+    }
+    .icon-link:hover { color: var(--accent); background: var(--accent-dim); }
+    .icon-link svg { width: 16px; height: 16px; }
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 6px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .hamburger span { display: block; width: 20px; height: 1.5px; background: var(--text-muted); border-radius: 2px; transition: all 0.3s var(--ease); }
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: var(--nav-h);
+      left: 0; right: 0;
+      background: rgba(15,17,23,0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem 2rem;
+      z-index: 499;
+      flex-direction: column;
+      gap: 0.25rem;
+      box-shadow: var(--shadow);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu .nav-link { font-size: 1rem; padding: 0.75rem 1rem; }
+    .mobile-menu__icons { display: flex; gap: 0.75rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .social-icon-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px;
+      border: 1px solid var(--border); border-radius: 10px;
+      color: var(--text-muted); transition: all 0.2s var(--ease);
+    }
+    .social-icon-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+    .social-icon-btn svg { width: 17px; height: 17px; }
+
+    /* ================================================================
+       BUTTONS
+    ================================================================ */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-family: var(--font-body); font-size: 0.85rem; font-weight: 600;
+      letter-spacing: 0.05em; padding: 0.8rem 1.75rem;
+      border-radius: var(--radius-sm); transition: all 0.22s var(--ease); white-space: nowrap;
+    }
+    .btn--primary { background: var(--accent); color: #0F1117; border: 1.5px solid var(--accent); }
+    .btn--primary:hover { background: #6fc1bf; border-color: #6fc1bf; transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow); }
+    .btn--outline { background: transparent; color: var(--text); border: 1.5px solid var(--border); }
+    .btn--outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    .tool-chip {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--accent); background: var(--accent-dim); border: 1px solid rgba(94,170,168,0.18);
+      padding: 0.22rem 0.65rem; border-radius: var(--radius-pill);
+    }
+
+    /* ================================================================
+       PAGE HEADER
+    ================================================================ */
+    .page-header {
+      padding-top: calc(var(--nav-h) + 5rem);
+      padding-bottom: 4rem;
+      background: var(--bg-2);
+      border-bottom: 1px solid var(--border);
+    }
+    .page-header__eyebrow {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.75rem;
+    }
+    .page-header__title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 400; line-height: 1.15;
+      color: var(--text); margin-bottom: 1rem;
+    }
+    .page-header__subtitle {
+      font-size: 1.05rem; font-weight: 300; color: var(--text-muted);
+      max-width: 58ch; line-height: 1.75;
+    }
+
+    /* ================================================================
+       PROJECT ENTRIES
+    ================================================================ */
+    .projects-list { padding: 80px 0; }
+
+    .project-entry {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 3rem;
+      margin-bottom: 2rem;
+      transition: box-shadow 0.3s, border-color 0.3s;
+    }
+    .project-entry:last-child { margin-bottom: 0; }
+    .project-entry:hover { box-shadow: var(--shadow); border-color: rgba(94,170,168,0.15); }
+
+    /* Top bar */
+    .project-entry__top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .project-entry__index {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-faint); margin-bottom: 0.5rem;
+    }
+    .project-entry__badge {
+      display: inline-block;
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--gold); background: var(--gold-dim);
+      border: 1px solid rgba(201,169,110,0.2);
+      padding: 0.2rem 0.65rem; border-radius: var(--radius-pill); margin-bottom: 0.75rem;
+    }
+    .project-entry__title {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 2.8vw, 2rem);
+      font-weight: 400; line-height: 1.25; color: var(--text); margin-bottom: 0.75rem;
+    }
+    .project-entry__overview {
+      font-size: 0.96rem; font-weight: 300; color: var(--text-muted);
+      max-width: 58ch; line-height: 1.75;
+    }
+    .project-entry__tools {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+      flex-shrink: 0; max-width: 280px; align-self: flex-start;
+    }
+
+    /* Stats row */
+    .project-entry__stats {
+      display: flex; gap: 1rem; margin-bottom: 1.75rem; flex-wrap: wrap;
+    }
+    .entry-stat {
+      flex: 1; min-width: 120px;
+      background: var(--bg-2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 1rem 1.25rem;
+    }
+    .entry-stat__val {
+      font-family: var(--font-display); font-size: 2rem;
+      color: var(--accent); line-height: 1; margin-bottom: 0.3rem;
+    }
+    .entry-stat__label { font-size: 0.75rem; font-weight: 500; color: var(--text-muted); line-height: 1.4; }
+
+    /* Body grid */
+    .project-entry__body {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1.75rem; margin-bottom: 1.75rem;
+    }
+    .entry-block__label {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-faint); margin-bottom: 0.6rem;
+    }
+    .entry-block__text { font-size: 0.9rem; font-weight: 300; color: var(--text-muted); line-height: 1.72; }
+
+    /* Outcome */
+    .project-entry__outcome {
+      background: var(--accent-dim);
+      border: 1px solid rgba(94,170,168,0.15);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem 1.5rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+      margin-bottom: 1.75rem;
+    }
+    .outcome__arrow { color: var(--accent); font-size: 1.1rem; flex-shrink: 0; margin-top: 0.05em; }
+    .outcome__text { font-size: 0.92rem; font-weight: 400; color: var(--text); line-height: 1.65; }
+    .outcome__text strong { color: var(--accent); }
+
+    /* Visual placeholder */
+    .project-entry__visual {
+      border: 2px dashed rgba(255,255,255,0.06);
+      border-radius: var(--radius-sm); height: 200px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-faint); font-size: 0.78rem; letter-spacing: 0.08em;
+      transition: border-color 0.2s; text-align: center;
+    }
+    .project-entry__visual:hover { border-color: rgba(94,170,168,0.15); }
+
+    /* ================================================================
+       FOOTER
+    ================================================================ */
+    .footer { border-top: 1px solid var(--border); padding: 2.5rem 0; }
+    .footer__inner {
+      max-width: var(--max-w); margin: 0 auto; padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .footer__left { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
+    .footer__copy { font-size: 0.8rem; color: var(--text-faint); }
+    .footer__links { display: flex; gap: 1.5rem; }
+    .footer__link { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); transition: color 0.2s; }
+    .footer__link:hover { color: var(--accent); }
+    .footer__icons { display: flex; gap: 0.5rem; }
+
+    /* ================================================================
+       SCROLL REVEAL
+    ================================================================ */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out); }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ================================================================
+       RESPONSIVE
+    ================================================================ */
+    @media (max-width: 900px) {
+      .header__nav, .header__icons { display: none; }
+      .hamburger { display: flex; }
+      .project-entry { padding: 2rem; }
+      .project-entry__top { flex-direction: column; }
+      .project-entry__tools { max-width: 100%; }
+      .project-entry__body { grid-template-columns: 1fr; gap: 1.25rem; }
+      .footer__inner { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 600px) {
+      .container { padding: 0 1.25rem; }
+      .projects-list { padding: 48px 0; }
+      .project-entry { padding: 1.5rem 1.25rem; }
+      .project-entry__stats { flex-direction: column; }
+      .footer__left { flex-direction: column; gap: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER
+  ============================================================ -->
+  <header class="header" id="header">
+    <div class="header__inner">
+      <a href="index.html" class="header__logo">Elly Yang</a>
+      <nav class="header__nav" aria-label="Main navigation">
+        <a href="index.html#about"   class="nav-link">About</a>
+        <a href="index.html#skills"  class="nav-link">Skills</a>
+        <a href="projects.html"      class="nav-link active">Projects</a>
+        <a href="index.html#resume"  class="nav-link">Resume</a>
+        <a href="index.html#contact" class="nav-link">Contact</a>
+      </nav>
+      <div class="header__icons">
+        <a href="https://www.linkedin.com/in/ellyyang0528/" target="_blank" class="icon-link" aria-label="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+        <a href="https://github.com/ellyyang0528" target="_blank" class="icon-link" aria-label="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        </a>
+        <a href="mailto:yang_elly@outlook.com" class="icon-link" aria-label="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html#about"   class="nav-link" onclick="closeMenu()">About</a>
+    <a href="index.html#skills"  class="nav-link" onclick="closeMenu()">Skills</a>
+    <a href="projects.html"      class="nav-link" onclick="closeMenu()">Projects</a>
+    <a href="index.html#resume"  class="nav-link" onclick="closeMenu()">Resume</a>
+    <a href="index.html#contact" class="nav-link" onclick="closeMenu()">Contact</a>
+    <div class="mobile-menu__icons">
+      <a href="https://www.linkedin.com/in/ellyyang0528/" target="_blank" class="social-icon-btn" aria-label="LinkedIn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      </a>
+      <a href="https://github.com/ellyyang0528" target="_blank" class="social-icon-btn" aria-label="GitHub">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      </a>
+      <a href="mailto:yang_elly@outlook.com" class="social-icon-btn" aria-label="Email">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </a>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       PAGE HEADER
+  ============================================================ -->
+  <header class="page-header">
+    <div class="container">
+      <p class="page-header__eyebrow">Portfolio</p>
+      <h1 class="page-header__title">Projects</h1>
+      <p class="page-header__subtitle">
+        A detailed record of analytical and data projects — each addressing a real
+        business or research problem through structured methods and clear outcomes.
+      </p>
+    </div>
+  </header>
+
+
+  <!-- ============================================================
+       PROJECTS LIST
+  ============================================================ -->
+  <main class="projects-list">
+    <div class="container">
+
+
+      <!-- ================================================
+           PROJECT 01: THESIS
+      ================================================ -->
+      <article class="project-entry reveal" id="thesis">
+
+        <div class="project-entry__top">
+          <div>
+            <div class="project-entry__index">Project 01</div>
+            <span class="project-entry__badge">M.S. Thesis · RSCA Conference 2025</span>
+            <h2 class="project-entry__title">
+              Predicting Conflicts &amp; Analyzing Boycotts<br>Through Reddit Posts
+            </h2>
+            <p class="project-entry__overview">
+              A large-scale NLP study of online conflict discourse during the
+              Israel-Palestine conflict — analyzing sentiment patterns, topic clusters,
+              and behavioral triggers across a 5GB Reddit dataset from September 2023
+              to January 2025.
+            </p>
+          </div>
+          <div class="project-entry__tools">
+            <span class="tool-chip">Python</span>
+            <span class="tool-chip">BERT</span>
+            <span class="tool-chip">NLP</span>
+            <span class="tool-chip">Sentiment Analysis</span>
+            <span class="tool-chip">Topic Modeling</span>
+            <span class="tool-chip">Reddit API</span>
+            <span class="tool-chip">Time-Series Analysis</span>
+          </div>
+        </div>
+
+        <!-- Key stats -->
+        <div class="project-entry__stats">
+          <div class="entry-stat">
+            <div class="entry-stat__val">5GB</div>
+            <div class="entry-stat__label">Reddit dataset (Sep 2023 – Jan 2025)</div>
+          </div>
+          <div class="entry-stat">
+            <div class="entry-stat__val">77%</div>
+            <div class="entry-stat__label">of comments classified as negative</div>
+          </div>
+          <div class="entry-stat">
+            <div class="entry-stat__val">60%</div>
+            <div class="entry-stat__label">longer average length in negative comments</div>
+          </div>
+          <div class="entry-stat">
+            <div class="entry-stat__val">2025</div>
+            <div class="entry-stat__label">Presented at RSCA Conference (13th annual)</div>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="project-entry__body">
+          <div>
+            <div class="entry-block__label">Objective</div>
+            <p class="entry-block__text">
+              To determine whether patterns in Reddit discourse could serve as leading
+              indicators of consumer boycott activity, and to characterize the linguistic
+              and emotional signature of escalating online conflict — with implications
+              for brand risk monitoring and social media analytics.
+            </p>
+          </div>
+          <div>
+            <div class="entry-block__label">Methods</div>
+            <p class="entry-block__text">
+              Collected subreddit data via Reddit API. Applied BERT-based sentiment
+              analysis with sentence-level splitting to handle model token limits on
+              long-form comments (binary positive/negative — no neutral). Used LDA
+              topic modeling to surface dominant themes. Time-series analysis tracked
+              sentiment shifts relative to real-world conflict events and subreddit groups.
+            </p>
+          </div>
+          <div>
+            <div class="entry-block__label">My Role</div>
+            <p class="entry-block__text">
+              Sole researcher. Responsible for full pipeline design — data collection,
+              preprocessing, model selection and tuning, temporal analysis, and
+              visualizations. Designed the conference presentation independently.
+              Presented at the 13th annual RSCA Conference (2025).
+            </p>
+          </div>
+        </div>
+
+        <div class="project-entry__outcome">
+          <span class="outcome__arrow">→</span>
+          <p class="outcome__text">
+            <strong>Key findings:</strong> 77% of comments were negative; negative comments
+            averaged 60% longer, indicating deeper emotional engagement. Conflict events
+            directly triggered multi-day negativity surges. Top posts consistently blamed
+            targeted groups. Emotionally charged vocabulary ("terrorist," "crime") dominated
+            negative word clouds. Anger propagated through high-engagement posts — offering
+            a scalable framework for brand risk monitoring via social sentiment tracking.
+          </p>
+        </div>
+
+        <div class="project-entry__visual">
+          ✏️ Add screenshots, charts, or slides here — place image files in images/ folder
+        </div>
+
+      </article>
+
+
+      <!-- ================================================
+           PROJECT 02: BIG DATA
+      ================================================ -->
+      <article class="project-entry reveal" id="bigdata">
+
+        <div class="project-entry__top">
+          <div>
+            <div class="project-entry__index">Project 02</div>
+            <span class="project-entry__badge">Big Data · Distributed Computing</span>
+            <h2 class="project-entry__title">Online Grocery Recommendation System</h2>
+            <p class="project-entry__overview">
+              A scalable, personalized recommendation engine built on Apache Spark
+              for a large-scale e-commerce grocery dataset — designed to improve
+              product discovery through collaborative filtering at production-ready scale.
+            </p>
+          </div>
+          <div class="project-entry__tools">
+            <span class="tool-chip">PySpark</span>
+            <span class="tool-chip">Spark SQL</span>
+            <span class="tool-chip">Spark MLlib</span>
+            <span class="tool-chip">ALS Algorithm</span>
+            <span class="tool-chip">Collaborative Filtering</span>
+            <span class="tool-chip">AWS</span>
+          </div>
+        </div>
+
+        <div class="project-entry__body">
+          <div>
+            <div class="entry-block__label">Objective</div>
+            <p class="entry-block__text">
+              To build a personalized product recommendation system that improves
+              shopping relevance at scale — reducing discovery friction in an online
+              grocery platform while surfacing high-probability products for each user segment.
+            </p>
+          </div>
+          <div>
+            <div class="entry-block__label">Methods</div>
+            <p class="entry-block__text">
+              Implemented collaborative filtering using Spark MLlib's ALS algorithm on
+              large-scale transaction data. Designed the full data pipeline in PySpark
+              for distributed processing. Evaluated recommendation quality using RMSE
+              and coverage metrics across user segments, comparing against a
+              popularity-baseline approach.
+            </p>
+          </div>
+          <div>
+            <div class="entry-block__label">My Role</div>
+            <p class="entry-block__text">
+              <!-- ✏️ Update if this was a group project — describe your specific contribution -->
+              Responsible for pipeline architecture, model selection, hyperparameter
+              tuning, and evaluation design. Applied distributed computing to ensure
+              the system scaled beyond in-memory limitations with a clear path to
+              production deployment.
+            </p>
+          </div>
+        </div>
+
+        <div class="project-entry__outcome">
+          <span class="outcome__arrow">→</span>
+          <p class="outcome__text">
+            <strong>Outcome:</strong> Delivered a recommendation system showing meaningful
+            improvement in personalization relevance over the popularity-baseline.
+            Proved the architecture scalable using Spark's distributed framework, with
+            a practical path to production deployment in a real e-commerce environment.
+          </p>
+        </div>
+
+        <div class="project-entry__visual">
+          ✏️ Add pipeline diagrams or charts here — place image files in images/ folder
+        </div>
+
+      </article>
+
+
+      <!-- ================================================
+           PROJECT 03: PRICING MODEL
+      ================================================ -->
+      <article class="project-entry reveal" id="pricing">
+
+        <div class="project-entry__top">
+          <div>
+            <div class="project-entry__index">Project 03</div>
+            <span class="project-entry__badge">Business Analytics · Real-World Application</span>
+            <h2 class="project-entry__title">Competitive Pricing Optimization Model</h2>
+            <p class="project-entry__overview">
+              An Excel-based competitive pricing and margin analysis model built and
+              applied at Maxx Group LLC — used to guide real product manufacturing
+              and pricing decisions across multiple retail channels.
+            </p>
+          </div>
+          <div class="project-entry__tools">
+            <span class="tool-chip">Excel Solver</span>
+            <span class="tool-chip">Data Modeling</span>
+            <span class="tool-chip">Pricing Analysis</span>
+            <span class="tool-chip">Competitive Intelligence</span>
+            <span class="tool-chip">Margin Analysis</span>
+          </div>
+        </div>
+
+        <div class="project-entry__body">
+          <div>
+            <div class="entry-block__label">Objective</div>
+            <p class="entry-block__text">
+              To determine which products were viable to manufacture given competitor
+              pricing across major retail channels, and to identify the optimal price
+              points that protected margin while remaining competitive to end buyers.
+            </p>
+          </div>
+          <div>
+            <div class="entry-block__label">Methods</div>
+            <p class="entry-block__text">
+              Collected competitor pricing from Amazon, Walmart, Home Depot, and Lowe's.
+              Built an Excel model mapping those prices against internal costs
+              (factory-direct sourcing + container-volume purchasing). Defined minimum
+              margin thresholds using Excel Solver. Calculated price differential
+              opportunities and product-level viability flags for executive reporting.
+            </p>
+          </div>
+          <div>
+            <div class="entry-block__label">My Role</div>
+            <p class="entry-block__text">
+              Sole analyst. Collected all competitor data, built the pricing model
+              from scratch, and reported findings directly to the business owner.
+              Model outputs informed which products to list, discontinue, or reprice
+              ahead of procurement decisions.
+            </p>
+          </div>
+        </div>
+
+        <div class="project-entry__outcome">
+          <span class="outcome__arrow">→</span>
+          <p class="outcome__text">
+            <strong>Outcome:</strong> The model identified product lines where competitor
+            pricing undercut minimum viable margin — flagging them for discontinuation.
+            For remaining products, it surfaced pricing windows that attracted buyers
+            while preserving profitability. Findings reported directly to management and
+            incorporated into product strategy.
+          </p>
+        </div>
+
+        <div class="project-entry__visual">
+          ✏️ Add model screenshots or summary charts here — place image files in images/ folder
+        </div>
+
+      </article>
+
+
+      <!-- ================================================
+           ADD MORE PROJECTS BELOW
+           Copy an <article class="project-entry"> block,
+           give it a new id, and fill in all fields.
+      ================================================ -->
+
+
+    </div>
+  </main>
+
+  <hr class="section-divider" />
+
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__left">
+        <span class="footer__copy">© 2026 Elly Yang</span>
+        <nav class="footer__links" aria-label="Footer navigation">
+          <a href="index.html"          class="footer__link">Home</a>
+          <a href="index.html#about"    class="footer__link">About</a>
+          <a href="index.html#skills"   class="footer__link">Skills</a>
+          <a href="projects.html"       class="footer__link">Projects</a>
+          <a href="pdf/Elly_Yang_Resume.pdf" class="footer__link" download>Resume</a>
+        </nav>
+      </div>
+      <div class="footer__icons">
+        <a href="https://www.linkedin.com/in/ellyyang0528/" target="_blank" class="icon-link" aria-label="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+        <a href="https://github.com/ellyyang0528" target="_blank" class="icon-link" aria-label="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        </a>
+        <a href="mailto:yang_elly@outlook.com" class="icon-link" aria-label="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ============================================================
+       JAVASCRIPT
+  ============================================================ -->
+  <script>
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+
+    const hamburger  = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    let menuOpen = false;
+
+    hamburger.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenu.classList.toggle('open', menuOpen);
+      hamburger.setAttribute('aria-expanded', menuOpen);
+      const spans = hamburger.querySelectorAll('span');
+      if (menuOpen) {
+        spans[0].style.transform = 'rotate(45deg) translate(4.5px, 4.5px)';
+        spans[1].style.opacity   = '0';
+        spans[2].style.transform = 'rotate(-45deg) translate(4.5px, -4.5px)';
+      } else {
+        spans[0].style.transform = '';
+        spans[1].style.opacity   = '';
+        spans[2].style.transform = '';
+      }
+    });
+
+    function closeMenu() {
+      menuOpen = false;
+      mobileMenu.classList.remove('open');
+      const spans = hamburger.querySelectorAll('span');
+      spans[0].style.transform = '';
+      spans[1].style.opacity   = '';
+      spans[2].style.transform = '';
+    }
+
+    document.addEventListener('click', (e) => {
+      if (menuOpen && !mobileMenu.contains(e.target) && !hamburger.contains(e.target)) closeMenu();
+    });
+
+    const revealEls = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+      revealEls.forEach(el => obs.observe(el));
+    } else {
+      revealEls.forEach(el => el.classList.add('visible'));
+    }
+  </script>
+
+</body>
+</html>
